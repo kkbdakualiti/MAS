@@ -9,6 +9,7 @@ import { ShieldCheck, Award, AlertTriangle, CheckCircle2, Lock, FileText, Printe
 import { useAuth } from '@/contexts/AuthContext';
 import { useAwards } from '@/hooks/useAwards';
 import { useCandidateAggregates, useManagementSelections, useDirectorSelections } from '@/hooks/useSelections';
+import { localDB } from '@/lib/localStore';
 import type { CandidateAggregate } from '@/lib/types';
 import SecretariatPrintDocument, { type SecretariatPrintItem } from '@/components/report/SecretariatPrintDocument';
 import toast from 'react-hot-toast';
@@ -153,6 +154,16 @@ export default function DirectorApprovalPage() {
         note: directorNote,
       });
 
+      // 3. Save to final_results
+      await localDB.saveFinalResults(
+        activeYear.id,
+        selectedCandidateIds.map((cid) => ({
+          awardId: activeAwardId,
+          candidateAggregateId: cid,
+          status: 'confirmed',
+        }))
+      );
+
       setModalOpen(false);
     } catch (err) {
       toast.error('Ralat mengesahkan keputusan.');
@@ -207,6 +218,15 @@ export default function DirectorApprovalPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          {mgmtRecommendedIds.size > 0 && (
+            <Button
+              variant="secondary"
+              onClick={() => setSelectedCandidateIds(Array.from(mgmtRecommendedIds))}
+              className="text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border-white/20"
+            >
+              Pilih Cadangan TPA/TPP ({mgmtRecommendedIds.size})
+            </Button>
+          )}
           <Button
             variant="gold"
             onClick={handlePromptConfirmation}

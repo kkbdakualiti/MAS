@@ -596,11 +596,41 @@ export const DEFAULT_OFFICIAL_AGGREGATES: CandidateAggregate[] = [
   },
 ];
 
+export const DEFAULT_OFFICIAL_MGMT_SELECTIONS: ManagementSelection[] = [
+  {
+    id: 'ms-muffili-penyelidikan',
+    award_id: 'award-5',
+    award_year_id: 'year-2026',
+    candidate_aggregate_id: 'agg-muffili-penyelidikan',
+    selected: true,
+    selected_by: '00000000-0000-0000-0000-000000000002',
+    selected_at: '2026-09-20T11:00:00.000Z',
+  },
+  {
+    id: 'ms-shakiroh-penerbitan',
+    award_id: 'award-6',
+    award_year_id: 'year-2026',
+    candidate_aggregate_id: 'agg-shakiroh-penerbitan',
+    selected: true,
+    selected_by: '00000000-0000-0000-0000-000000000002',
+    selected_at: '2026-09-20T11:05:00.000Z',
+  },
+  {
+    id: 'ms-hafizah-inovasi',
+    award_id: 'award-16',
+    award_year_id: 'year-2026',
+    candidate_aggregate_id: 'agg-hafizah-inovasi',
+    selected: true,
+    selected_by: '00000000-0000-0000-0000-000000000002',
+    selected_at: '2026-09-20T11:10:00.000Z',
+  },
+];
+
 function getInitialCandidatesAndAggregates(): { candidates: PanelCandidate[]; aggregates: CandidateAggregate[]; mgmtSelections: ManagementSelection[] } {
   return {
     candidates: DEFAULT_OFFICIAL_CANDIDATES,
     aggregates: DEFAULT_OFFICIAL_AGGREGATES,
-    mgmtSelections: [],
+    mgmtSelections: DEFAULT_OFFICIAL_MGMT_SELECTIONS,
   };
 }
 
@@ -825,10 +855,15 @@ export function initLocalStore() {
   );
   setStorage(STORAGE_KEYS.AGGREGATES, filteredAggs);
 
-  const currentMgmt = getStorage<ManagementSelection[]>(STORAGE_KEYS.MGMT_SELECTIONS, []);
+  const currentMgmt = getStorage<ManagementSelection[]>(STORAGE_KEYS.MGMT_SELECTIONS, DEFAULT_OFFICIAL_MGMT_SELECTIONS);
   const filteredMgmt = currentMgmt.filter(
     (m) => m.id !== 'ms-1' && !dummyAggIds.has(m.candidate_aggregate_id)
   );
+  DEFAULT_OFFICIAL_MGMT_SELECTIONS.forEach((dm) => {
+    if (!filteredMgmt.some((m) => m.candidate_aggregate_id === dm.candidate_aggregate_id)) {
+      filteredMgmt.push(dm);
+    }
+  });
   setStorage(STORAGE_KEYS.MGMT_SELECTIONS, filteredMgmt);
 
   const currentDir = getStorage<DirectorSelection[]>(STORAGE_KEYS.DIR_SELECTIONS, []);
@@ -1535,6 +1570,7 @@ export const localDB = {
           itemSets?: AwardItemSet[];
           items?: AwardItem[];
           awards?: Award[];
+          finalResults?: FinalResult[];
         };
 
         if (Array.isArray(cloudData.awards) && cloudData.awards.length > 0) {
@@ -1612,6 +1648,13 @@ export const localDB = {
           cloudData.items.forEach((i) => itemMap.set(i.id, i));
           setStorage(STORAGE_KEYS.ITEMS, Array.from(itemMap.values()));
         }
+
+        if (Array.isArray(cloudData.finalResults) && cloudData.finalResults.length > 0) {
+          const localFinals = getStorage<FinalResult[]>(STORAGE_KEYS.FINAL_RESULTS, []);
+          const finalMap = new Map(localFinals.map((f) => [f.id, f]));
+          cloudData.finalResults.forEach((f: FinalResult) => finalMap.set(f.id, f));
+          setStorage(STORAGE_KEYS.FINAL_RESULTS, Array.from(finalMap.values()));
+        }
       }
     } catch (e) {
       console.warn('Sync candidates from cloud notice:', e);
@@ -1626,6 +1669,7 @@ export const localDB = {
       const aggregates = getStorage<CandidateAggregate[]>(STORAGE_KEYS.AGGREGATES, []);
       const mgmtSelections = getStorage<ManagementSelection[]>(STORAGE_KEYS.MGMT_SELECTIONS, []);
       const dirSelections = getStorage<DirectorSelection[]>(STORAGE_KEYS.DIR_SELECTIONS, []);
+      const finalResults = getStorage<FinalResult[]>(STORAGE_KEYS.FINAL_RESULTS, []);
       const cloudAssignments = getStorage<Record<string, string[]>>(STORAGE_KEYS.CLOUD_ASSIGNMENTS, {});
       const assignments = getStorage<EvaluatorAssignment[]>(STORAGE_KEYS.ASSIGNMENTS, []);
       const itemSets = localDB.getItemSets();
@@ -1639,6 +1683,7 @@ export const localDB = {
         aggregates,
         mgmtSelections,
         dirSelections,
+        finalResults,
         cloudAssignments,
         assignments,
         itemSets,
@@ -1937,6 +1982,48 @@ export const localDB = {
     }
     setStorage(STORAGE_KEYS.DIR_SELECTIONS, sels);
     localDB.saveCandidatesToCloud().catch(() => {});
+  },
+
+  // FINAL RESULTS (OFFICIAL RATIFIED WINNERS)
+  getFinalResults: (yearId?: string): FinalResult[] => {
+    let results = getStorage<FinalResult[]>(STORAGE_KEYS.FINAL_RESULTS, []);
+    if (yearId) {
+      results = results.filter((r) => matchesYear(r.award_year_id, yearId));
+    }
+    return results;
+  },
+  saveFinalResults: async (yearId: string, results: { awardId: string; candidateAggregateId: string; status?: string }[]): Promise<void> => {
+    let current = getStorage<FinalResult[]>(STORAGE_KEYS.FINAL_RESULTS, []);
+    const awardIdsToUpdate = new Set(results.map((r) => r.awardId));
+    current = current.filter((r) => !(matchesYear(r.award_year_id, yearId) && awardIdsToUpdate.has(r.award_id)));
+
+    results.forEach((r) => {
+      current.push({
+        id: `fr-${r.candidateAggregateId}`,
+        award_id: r.awardId,
+        award_year_id: yearId,
+        candidate_aggregate_id: r.candidateAggregateId,
+        status: r.status || 'confirmed',
+        confirmed_at: new Date().toISOString(),
+      });
+    });
+    setStorage(STORAGE_KEYS.FINAL_RESULTS, current);
+    localDB.saveCandidatesToCloud().catch(() => {});
+
+    if (isSupabaseConfigured()) {
+      try {
+        const rows = results.map((r) => ({
+          award_id: r.awardId,
+          award_year_id: yearId,
+          candidate_aggregate_id: r.candidateAggregateId,
+          status: r.status || 'confirmed',
+          confirmed_at: new Date().toISOString(),
+        }));
+        await supabase.from('final_results').upsert(rows, { onConflict: 'award_id,award_year_id' });
+      } catch (e) {
+        console.warn('Supabase save final results notice:', e);
+      }
+    }
   },
 
   // USER PROFILES & ROLES (MULTI-ROLE & PRODUCTION MANAGEMENT)
