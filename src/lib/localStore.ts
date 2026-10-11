@@ -58,10 +58,23 @@ const STORAGE_KEYS = {
   AUTH_VAULT: 'kkbda_auth_vault',
 };
 
+export const matchesYear = (itemYearId?: string | null, targetYearId?: string | null): boolean => {
+  if (!targetYearId || !itemYearId) return true;
+  if (itemYearId === targetYearId) return true;
+  const cleanItem = String(itemYearId).toLowerCase().trim();
+  const cleanTarget = String(targetYearId).toLowerCase().trim();
+  if (cleanItem === cleanTarget) return true;
+  const is2026Item = cleanItem === 'year-2026' || cleanItem === 'fdb36a98-2c1c-418f-abf6-d4815b9b9ad9' || cleanItem.includes('2026');
+  const is2026Target = cleanTarget === 'year-2026' || cleanTarget === 'fdb36a98-2c1c-418f-abf6-d4815b9b9ad9' || cleanTarget.includes('2026');
+  if (is2026Item && is2026Target) return true;
+  return false;
+};
+
 // Initial Seed Data
 function getInitialYears(): AwardYear[] {
   return [
-    { id: 'year-2026', year: 2026, is_active: true, created_at: new Date().toISOString() },
+    { id: 'fdb36a98-2c1c-418f-abf6-d4815b9b9ad9', year: 2026, is_active: true, created_at: '2026-09-16T22:32:10.631554+00:00' },
+    { id: 'year-2026', year: 2026, is_active: true, created_at: '2026-09-14T15:34:33.000Z' },
     { id: 'year-2025', year: 2025, is_active: false, created_at: new Date().toISOString() },
   ];
 }
@@ -430,11 +443,165 @@ function getInitialAssignments(): EvaluatorAssignment[] {
     { id: 'asgn-colab-8', evaluator_id: 'colab', award_id: 'award-8', award_year_id: activeYearId, division: null, created_at: now },
     { id: 'asgn-kupik-5', evaluator_id: 'kupik', award_id: 'award-5', award_year_id: activeYearId, division: null, created_at: now },
     { id: 'asgn-kupik-6', evaluator_id: 'kupik', award_id: 'award-6', award_year_id: activeYearId, division: null, created_at: now },
+    { id: 'asgn-kupik-16', evaluator_id: 'kupik', award_id: 'award-16', award_year_id: activeYearId, division: null, created_at: now },
+    { id: 'asgn-kupik-prof-5', evaluator_id: '553189ea-d90a-4eeb-820c-6c1603cee752', award_id: 'award-5', award_year_id: activeYearId, division: null, created_at: now },
+    { id: 'asgn-kupik-prof-6', evaluator_id: '553189ea-d90a-4eeb-820c-6c1603cee752', award_id: 'award-6', award_year_id: activeYearId, division: null, created_at: now },
+    { id: 'asgn-kupik-prof-16', evaluator_id: '553189ea-d90a-4eeb-820c-6c1603cee752', award_id: 'award-16', award_year_id: activeYearId, division: null, created_at: now },
   ];
 }
 
+export const DEFAULT_OFFICIAL_CANDIDATES: PanelCandidate[] = [
+  {
+    id: 'cand-muffili-penyelidikan',
+    award_id: 'award-5',
+    award_year_id: 'year-2026',
+    panel_id: '553189ea-d90a-4eeb-820c-6c1603cee752',
+    candidate_name: 'MUFFILI BIN MAHADI',
+    staff_number: null,
+    division: 'KUPIK',
+    position: 'KETUA UNIT PENYELIDIKAN, INOVASI & KOMERSIAL',
+    created_by: '553189ea-d90a-4eeb-820c-6c1603cee752',
+    is_dummy: false,
+    created_at: '2026-09-20T10:00:00.000Z',
+    updated_at: '2026-09-20T10:00:00.000Z',
+  },
+  {
+    id: 'cand-shakiroh-penerbitan',
+    award_id: 'award-6',
+    award_year_id: 'year-2026',
+    panel_id: '553189ea-d90a-4eeb-820c-6c1603cee752',
+    candidate_name: 'SHAKIROH BINTI YAAKOB',
+    staff_number: null,
+    division: 'KUPIK',
+    position: 'PENSYARAH',
+    created_by: '553189ea-d90a-4eeb-820c-6c1603cee752',
+    is_dummy: false,
+    created_at: '2026-09-20T10:05:00.000Z',
+    updated_at: '2026-09-20T10:05:00.000Z',
+  },
+  {
+    id: 'cand-hafizah-inovasi',
+    award_id: 'award-16',
+    award_year_id: 'year-2026',
+    panel_id: '553189ea-d90a-4eeb-820c-6c1603cee752',
+    candidate_name: 'HAFIZAH BINTI ABDULLAH @ ALI',
+    staff_number: null,
+    division: 'KUPIK',
+    position: 'PENSYARAH',
+    created_by: '553189ea-d90a-4eeb-820c-6c1603cee752',
+    is_dummy: false,
+    created_at: '2026-09-20T10:10:00.000Z',
+    updated_at: '2026-09-20T10:10:00.000Z',
+  },
+];
+
+export const DEFAULT_OFFICIAL_EVALUATIONS: Evaluation[] = [
+  {
+    id: 'eval-muffili-penyelidikan',
+    panel_candidate_id: 'cand-muffili-penyelidikan',
+    panel_id: '553189ea-d90a-4eeb-820c-6c1603cee752',
+    award_id: 'award-5',
+    award_year_id: 'year-2026',
+    total_score: 87,
+    status: 'submitted',
+    submitted_at: '2026-09-20T10:00:00.000Z',
+    created_at: '2026-09-20T10:00:00.000Z',
+    updated_at: '2026-09-20T10:00:00.000Z',
+  },
+  {
+    id: 'eval-shakiroh-penerbitan',
+    panel_candidate_id: 'cand-shakiroh-penerbitan',
+    panel_id: '553189ea-d90a-4eeb-820c-6c1603cee752',
+    award_id: 'award-6',
+    award_year_id: 'year-2026',
+    total_score: 88,
+    status: 'submitted',
+    submitted_at: '2026-09-20T10:05:00.000Z',
+    created_at: '2026-09-20T10:05:00.000Z',
+    updated_at: '2026-09-20T10:05:00.000Z',
+  },
+  {
+    id: 'eval-hafizah-inovasi',
+    panel_candidate_id: 'cand-hafizah-inovasi',
+    panel_id: '553189ea-d90a-4eeb-820c-6c1603cee752',
+    award_id: 'award-16',
+    award_year_id: 'year-2026',
+    total_score: 88,
+    status: 'submitted',
+    submitted_at: '2026-09-20T10:10:00.000Z',
+    created_at: '2026-09-20T10:10:00.000Z',
+    updated_at: '2026-09-20T10:10:00.000Z',
+  },
+];
+
+export const DEFAULT_OFFICIAL_SCORES: EvaluationScore[] = [
+  { id: 'sc-muffili-1', evaluation_id: 'eval-muffili-penyelidikan', award_item_id: 'set-penyelidikan-item-1', score: 26, max_score: 30, created_at: '2026-09-20T10:00:00.000Z', updated_at: '2026-09-20T10:00:00.000Z' },
+  { id: 'sc-muffili-2', evaluation_id: 'eval-muffili-penyelidikan', award_item_id: 'set-penyelidikan-item-2', score: 22, max_score: 25, created_at: '2026-09-20T10:00:00.000Z', updated_at: '2026-09-20T10:00:00.000Z' },
+  { id: 'sc-muffili-3', evaluation_id: 'eval-muffili-penyelidikan', award_item_id: 'set-penyelidikan-item-3', score: 22, max_score: 25, created_at: '2026-09-20T10:00:00.000Z', updated_at: '2026-09-20T10:00:00.000Z' },
+  { id: 'sc-muffili-4', evaluation_id: 'eval-muffili-penyelidikan', award_item_id: 'set-penyelidikan-item-4', score: 17, max_score: 20, created_at: '2026-09-20T10:00:00.000Z', updated_at: '2026-09-20T10:00:00.000Z' },
+
+  { id: 'sc-shakiroh-1', evaluation_id: 'eval-shakiroh-penerbitan', award_item_id: 'set-penerbitan-item-1', score: 31, max_score: 35, created_at: '2026-09-20T10:05:00.000Z', updated_at: '2026-09-20T10:05:00.000Z' },
+  { id: 'sc-shakiroh-2', evaluation_id: 'eval-shakiroh-penerbitan', award_item_id: 'set-penerbitan-item-2', score: 22, max_score: 25, created_at: '2026-09-20T10:05:00.000Z', updated_at: '2026-09-20T10:05:00.000Z' },
+  { id: 'sc-shakiroh-3', evaluation_id: 'eval-shakiroh-penerbitan', award_item_id: 'set-penerbitan-item-3', score: 18, max_score: 20, created_at: '2026-09-20T10:05:00.000Z', updated_at: '2026-09-20T10:05:00.000Z' },
+  { id: 'sc-shakiroh-4', evaluation_id: 'eval-shakiroh-penerbitan', award_item_id: 'set-penerbitan-item-4', score: 17, max_score: 20, created_at: '2026-09-20T10:05:00.000Z', updated_at: '2026-09-20T10:05:00.000Z' },
+
+  { id: 'sc-hafizah-1', evaluation_id: 'eval-hafizah-inovasi', award_item_id: 'set-ikon-inovasi-item-1', score: 26, max_score: 30, created_at: '2026-09-20T10:10:00.000Z', updated_at: '2026-09-20T10:10:00.000Z' },
+  { id: 'sc-hafizah-2', evaluation_id: 'eval-hafizah-inovasi', award_item_id: 'set-ikon-inovasi-item-2', score: 26, max_score: 30, created_at: '2026-09-20T10:10:00.000Z', updated_at: '2026-09-20T10:10:00.000Z' },
+  { id: 'sc-hafizah-3', evaluation_id: 'eval-hafizah-inovasi', award_item_id: 'set-ikon-inovasi-item-3', score: 18, max_score: 20, created_at: '2026-09-20T10:10:00.000Z', updated_at: '2026-09-20T10:10:00.000Z' },
+  { id: 'sc-hafizah-4', evaluation_id: 'eval-hafizah-inovasi', award_item_id: 'set-ikon-inovasi-item-4', score: 18, max_score: 20, created_at: '2026-09-20T10:10:00.000Z', updated_at: '2026-09-20T10:10:00.000Z' },
+];
+
+export const DEFAULT_OFFICIAL_AGGREGATES: CandidateAggregate[] = [
+  {
+    id: 'agg-muffili-penyelidikan',
+    award_id: 'award-5',
+    award_year_id: 'year-2026',
+    candidate_identifier: 'cand-muffili-penyelidikan',
+    candidate_name: 'MUFFILI BIN MAHADI',
+    staff_number: null,
+    division: 'KUPIK',
+    score_count: 1,
+    total_score: 87,
+    average_score: 87.0,
+    individual_scores: [87],
+    updated_at: '2026-09-20T10:00:00.000Z',
+  },
+  {
+    id: 'agg-shakiroh-penerbitan',
+    award_id: 'award-6',
+    award_year_id: 'year-2026',
+    candidate_identifier: 'cand-shakiroh-penerbitan',
+    candidate_name: 'SHAKIROH BINTI YAAKOB',
+    staff_number: null,
+    division: 'KUPIK',
+    score_count: 1,
+    total_score: 88,
+    average_score: 88.0,
+    individual_scores: [88],
+    updated_at: '2026-09-20T10:05:00.000Z',
+  },
+  {
+    id: 'agg-hafizah-inovasi',
+    award_id: 'award-16',
+    award_year_id: 'year-2026',
+    candidate_identifier: 'cand-hafizah-inovasi',
+    candidate_name: 'HAFIZAH BINTI ABDULLAH @ ALI',
+    staff_number: null,
+    division: 'KUPIK',
+    score_count: 1,
+    total_score: 88,
+    average_score: 88.0,
+    individual_scores: [88],
+    updated_at: '2026-09-20T10:10:00.000Z',
+  },
+];
+
 function getInitialCandidatesAndAggregates(): { candidates: PanelCandidate[]; aggregates: CandidateAggregate[]; mgmtSelections: ManagementSelection[] } {
-  return { candidates: [], aggregates: [], mgmtSelections: [] };
+  return {
+    candidates: DEFAULT_OFFICIAL_CANDIDATES,
+    aggregates: DEFAULT_OFFICIAL_AGGREGATES,
+    mgmtSelections: [],
+  };
 }
 
 
@@ -463,7 +630,33 @@ function setStorage<T>(key: string, data: T): void {
 // Initialise DB once
 export function initLocalStore() {
   getStorage(STORAGE_KEYS.YEARS, getInitialYears());
-  const storedAwards = getStorage<Award[]>(STORAGE_KEYS.AWARDS, getInitialAwards());
+  const initialAwards = getInitialAwards();
+  const storedAwards = getStorage<Award[]>(STORAGE_KEYS.AWARDS, initialAwards);
+
+  // Ensure any newly added default awards (e.g. award-16, award-17) are merged into storedAwards
+  let awardsChanged = false;
+  initialAwards.forEach((initAw) => {
+    const exists = storedAwards.some(
+      (a) => a.id === initAw.id || a.name.toLowerCase().trim() === initAw.name.toLowerCase().trim()
+    );
+    if (!exists) {
+      storedAwards.push(initAw);
+      awardsChanged = true;
+    }
+  });
+
+  // Ensure award-5 name is updated from "Ikon Penyelidikan & Inovasi" to "Ikon Penyelidikan"
+  storedAwards.forEach((a) => {
+    if (a.id === 'award-5' && (a.name.includes('& Inovasi') || a.name === 'Ikon Penyelidikan & Inovasi')) {
+      a.name = 'Ikon Penyelidikan';
+      a.description = 'Anugerah kecemerlangan dan pengiktirafan sumbangan bagi Ikon Penyelidikan KKBDA.';
+      awardsChanged = true;
+    }
+  });
+
+  if (awardsChanged) {
+    setStorage(STORAGE_KEYS.AWARDS, storedAwards);
+  }
 
   // Consolidation: If split categories "Pengurusan PdP Terbaik - *" exist, consolidate back into single "Pengurusan PdP Terbaik"
   const hasSplitPdp = storedAwards.some((a) => a.name.startsWith('Pengurusan PdP Terbaik -'));
@@ -523,30 +716,37 @@ export function initLocalStore() {
   const existingSets = getStorage<AwardItemSet[]>(STORAGE_KEYS.ITEM_SETS, []);
   const existingItems = getStorage<AwardItem[]>(STORAGE_KEYS.ITEMS, []);
 
-  // Ensure all 15 categories have their official rubric sets and items
-  const mergedSets = [...existingSets];
-  defaultSets.forEach((dSet) => {
-    const idx = mergedSets.findIndex((s) => s.id === dSet.id || s.award_id === dSet.award_id);
-    if (idx >= 0) {
-      mergedSets[idx] = { ...dSet, ...mergedSets[idx], name: dSet.name, total_max_score: 100, is_complete: true };
-    } else {
-      mergedSets.push(dSet);
-    }
-  });
-  setStorage(STORAGE_KEYS.ITEM_SETS, mergedSets);
+  // Ensure all 15 categories have their official rubric sets and items fully populated
+  const isItemsValid = Array.isArray(existingItems) && existingItems.length >= 40 && existingItems.every((i) => i.id && !i.id.includes('${'));
 
-  const mergedItems = [...existingItems];
-  defaultItems.forEach((dItem) => {
-    const idx = mergedItems.findIndex(
-      (i) => i.id === dItem.id || (i.item_set_id === dItem.item_set_id && i.sort_order === dItem.sort_order)
-    );
-    if (idx >= 0) {
-      mergedItems[idx] = { ...mergedItems[idx], ...dItem };
-    } else {
-      mergedItems.push(dItem);
-    }
-  });
-  setStorage(STORAGE_KEYS.ITEMS, mergedItems);
+  if (!isItemsValid) {
+    setStorage(STORAGE_KEYS.ITEM_SETS, defaultSets);
+    setStorage(STORAGE_KEYS.ITEMS, defaultItems);
+  } else {
+    const mergedSets = [...existingSets];
+    defaultSets.forEach((dSet) => {
+      const idx = mergedSets.findIndex((s) => s.id === dSet.id || s.award_id === dSet.award_id);
+      if (idx >= 0) {
+        mergedSets[idx] = { ...dSet, ...mergedSets[idx], name: dSet.name, total_max_score: 100, is_complete: true };
+      } else {
+        mergedSets.push(dSet);
+      }
+    });
+    setStorage(STORAGE_KEYS.ITEM_SETS, mergedSets);
+
+    const mergedItems = [...existingItems];
+    defaultItems.forEach((dItem) => {
+      const idx = mergedItems.findIndex(
+        (i) => i.id === dItem.id || (i.item_set_id === dItem.item_set_id && i.sort_order === dItem.sort_order)
+      );
+      if (idx >= 0) {
+        mergedItems[idx] = { ...mergedItems[idx], ...dItem };
+      } else {
+        mergedItems.push(dItem);
+      }
+    });
+    setStorage(STORAGE_KEYS.ITEMS, mergedItems);
+  }
   // Ensure all 10 official evaluators exist and purge legacy dummy evaluators
   let existingEvaluators = getStorage<Evaluator[]>(STORAGE_KEYS.EVALUATORS, getInitialEvaluators());
   existingEvaluators = existingEvaluators.filter(
@@ -645,6 +845,80 @@ export function initLocalStore() {
   );
   setStorage(STORAGE_KEYS.FINAL_RESULTS, filteredFinal);
 
+  // Ensure award years are synced in storage with both UUID and year-2026 active
+  const currentYears = getStorage<AwardYear[]>(STORAGE_KEYS.YEARS, []);
+  let yearsChanged = false;
+  getInitialYears().forEach((iy) => {
+    if (!currentYears.some((cy) => cy.id === iy.id)) {
+      currentYears.unshift(iy);
+      yearsChanged = true;
+    }
+  });
+  if (yearsChanged) setStorage(STORAGE_KEYS.YEARS, currentYears);
+
+  // Ensure restored official panel candidates from Muffili (KUPIK) and official panels are merged into storage
+  let finalCands = getStorage<PanelCandidate[]>(STORAGE_KEYS.CANDIDATES, []);
+  let candsChanged = false;
+  DEFAULT_OFFICIAL_CANDIDATES.forEach((offCand) => {
+    const idx = finalCands.findIndex(
+      (c) => c.id === offCand.id || (c.candidate_name.toLowerCase().trim() === offCand.candidate_name.toLowerCase().trim() && c.award_id === offCand.award_id)
+    );
+    if (idx !== -1) {
+      finalCands[idx] = { ...finalCands[idx], ...offCand };
+      candsChanged = true;
+    } else {
+      finalCands.push(offCand);
+      candsChanged = true;
+    }
+  });
+  if (candsChanged) setStorage(STORAGE_KEYS.CANDIDATES, finalCands);
+
+  let finalEvals = getStorage<Evaluation[]>(STORAGE_KEYS.EVALUATIONS, []);
+  let evalsChanged = false;
+  DEFAULT_OFFICIAL_EVALUATIONS.forEach((offEval) => {
+    const idx = finalEvals.findIndex(
+      (e) => e.id === offEval.id || e.panel_candidate_id === offEval.panel_candidate_id
+    );
+    if (idx !== -1) {
+      finalEvals[idx] = { ...finalEvals[idx], ...offEval };
+      evalsChanged = true;
+    } else {
+      finalEvals.push(offEval);
+      evalsChanged = true;
+    }
+  });
+  if (evalsChanged) setStorage(STORAGE_KEYS.EVALUATIONS, finalEvals);
+
+  let finalScores = getStorage<EvaluationScore[]>(STORAGE_KEYS.SCORES, []);
+  let scoresChanged = false;
+  DEFAULT_OFFICIAL_SCORES.forEach((offSc) => {
+    const idx = finalScores.findIndex((s) => s.id === offSc.id);
+    if (idx !== -1) {
+      finalScores[idx] = { ...finalScores[idx], ...offSc };
+      scoresChanged = true;
+    } else {
+      finalScores.push(offSc);
+      scoresChanged = true;
+    }
+  });
+  if (scoresChanged) setStorage(STORAGE_KEYS.SCORES, finalScores);
+
+  let finalAggs = getStorage<CandidateAggregate[]>(STORAGE_KEYS.AGGREGATES, []);
+  let aggsChanged2 = false;
+  DEFAULT_OFFICIAL_AGGREGATES.forEach((offAgg) => {
+    const idx = finalAggs.findIndex(
+      (a) => a.id === offAgg.id || (a.candidate_name.toLowerCase().trim() === offAgg.candidate_name.toLowerCase().trim() && a.award_id === offAgg.award_id)
+    );
+    if (idx !== -1) {
+      finalAggs[idx] = { ...finalAggs[idx], ...offAgg };
+      aggsChanged2 = true;
+    } else {
+      finalAggs.push(offAgg);
+      aggsChanged2 = true;
+    }
+  });
+  if (aggsChanged2) setStorage(STORAGE_KEYS.AGGREGATES, finalAggs);
+
   // Clear obsolete demoProfile that may hold legacy dummy accounts
   try {
     const rawDemo = localStorage.getItem('demoProfile');
@@ -709,6 +983,7 @@ export const localDB = {
     };
     awards.push(newAward);
     setStorage(STORAGE_KEYS.AWARDS, awards);
+    localDB.saveCandidatesToCloud().catch(() => {});
     return newAward;
   },
   updateAward: (id: string, updates: Partial<Award>): Award | null => {
@@ -717,17 +992,30 @@ export const localDB = {
     if (idx === -1) return null;
     awards[idx] = { ...awards[idx], ...updates, updated_at: new Date().toISOString() };
     setStorage(STORAGE_KEYS.AWARDS, awards);
+    localDB.saveCandidatesToCloud().catch(() => {});
     return awards[idx];
   },
   deleteAward: (id: string): void => {
     const awards = localDB.getAwards().filter((a) => a.id !== id);
     setStorage(STORAGE_KEYS.AWARDS, awards);
+    localDB.saveCandidatesToCloud().catch(() => {});
   },
 
   // ITEM SETS
   getItemSets: (): AwardItemSet[] => {
-    const sets = getStorage<AwardItemSet[]>(STORAGE_KEYS.ITEM_SETS, []);
-    const items = getStorage<AwardItem[]>(STORAGE_KEYS.ITEMS, []);
+    let sets = getStorage<AwardItemSet[]>(STORAGE_KEYS.ITEM_SETS, []);
+    let items = getStorage<AwardItem[]>(STORAGE_KEYS.ITEMS, []);
+
+    const isItemsValid = Array.isArray(items) && items.length >= 40 && items.every((i) => i.id && !i.id.includes('${'));
+
+    if (!sets || sets.length < 10 || !isItemsValid) {
+      const { sets: defaultSets, items: defaultItems } = getInitialItemSets();
+      setStorage(STORAGE_KEYS.ITEM_SETS, defaultSets);
+      setStorage(STORAGE_KEYS.ITEMS, defaultItems);
+      sets = defaultSets;
+      items = defaultItems;
+    }
+
     return sets.map((s) => ({
       ...s,
       award_items: items.filter((i) => i.item_set_id === s.id).sort((a, b) => a.sort_order - b.sort_order),
@@ -849,7 +1137,7 @@ export const localDB = {
     const evalMap = new Map(evals.map((e) => [e.id, e]));
 
     return asgns
-      .filter((a) => (!awardId || a.award_id === awardId) && (!yearId || a.award_year_id === yearId))
+      .filter((a) => (!awardId || a.award_id === awardId) && (!yearId || matchesYear(a.award_year_id, yearId)))
       .map((a) => ({
         ...a,
         evaluator: evalMap.get(a.evaluator_id) || {
@@ -981,6 +1269,9 @@ export const localDB = {
           );
       }
 
+      // Segerakkan ke cloud melalui candidates sync payload untuk cross-device persistence
+      localDB.saveCandidatesToCloud().catch(() => {});
+
       window.dispatchEvent(new Event('kkbda_assignments_changed'));
       return true;
     } catch (e) {
@@ -991,7 +1282,7 @@ export const localDB = {
 
   assignEvaluator: (awardId: string, yearId: string, evaluatorId: string, division?: string | null): void => {
     const asgns = getStorage<EvaluatorAssignment[]>(STORAGE_KEYS.ASSIGNMENTS, []);
-    const existingIdx = asgns.findIndex((a) => a.award_id === awardId && a.award_year_id === yearId && a.evaluator_id === evaluatorId);
+    const existingIdx = asgns.findIndex((a) => a.award_id === awardId && matchesYear(a.award_year_id, yearId) && a.evaluator_id === evaluatorId);
     if (existingIdx !== -1) {
       if (division) asgns[existingIdx].division = division;
     } else {
@@ -1005,12 +1296,12 @@ export const localDB = {
       });
     }
     setStorage(STORAGE_KEYS.ASSIGNMENTS, asgns);
-    const currentAwards = asgns.filter((a) => a.evaluator_id === evaluatorId && a.award_year_id === yearId).map((a) => a.award_id);
+    const currentAwards = asgns.filter((a) => a.evaluator_id === evaluatorId && matchesYear(a.award_year_id, yearId)).map((a) => a.award_id);
     localDB.saveAssignmentsToCloud([evaluatorId], currentAwards).catch(() => {});
   },
   setAssignmentDivision: (awardId: string, yearId: string, evaluatorId: string, division: string): void => {
     const asgns = getStorage<EvaluatorAssignment[]>(STORAGE_KEYS.ASSIGNMENTS, []);
-    const idx = asgns.findIndex((a) => a.award_id === awardId && a.award_year_id === yearId && a.evaluator_id === evaluatorId);
+    const idx = asgns.findIndex((a) => a.award_id === awardId && matchesYear(a.award_year_id, yearId) && a.evaluator_id === evaluatorId);
     if (idx !== -1) {
       asgns[idx].division = division;
       setStorage(STORAGE_KEYS.ASSIGNMENTS, asgns);
@@ -1018,16 +1309,16 @@ export const localDB = {
   },
   unassignEvaluator: (awardId: string, yearId: string, evaluatorId: string): void => {
     const asgns = getStorage<EvaluatorAssignment[]>(STORAGE_KEYS.ASSIGNMENTS, []).filter(
-      (a) => !(a.award_id === awardId && a.award_year_id === yearId && a.evaluator_id === evaluatorId)
+      (a) => !(a.award_id === awardId && matchesYear(a.award_year_id, yearId) && a.evaluator_id === evaluatorId)
     );
     setStorage(STORAGE_KEYS.ASSIGNMENTS, asgns);
-    const currentAwards = asgns.filter((a) => a.evaluator_id === evaluatorId && a.award_year_id === yearId).map((a) => a.award_id);
+    const currentAwards = asgns.filter((a) => a.evaluator_id === evaluatorId && matchesYear(a.award_year_id, yearId)).map((a) => a.award_id);
     localDB.saveAssignmentsToCloud([evaluatorId], currentAwards).catch(() => {});
   },
   setEvaluatorCategories: (evaluatorId: string, awardIds: string[], yearId: string = 'year-2026'): void => {
     let asgns = getStorage<EvaluatorAssignment[]>(STORAGE_KEYS.ASSIGNMENTS, []);
     // Remove all assignments for this evaluator and year
-    asgns = asgns.filter((a) => !(a.evaluator_id === evaluatorId && a.award_year_id === yearId));
+    asgns = asgns.filter((a) => !(a.evaluator_id === evaluatorId && matchesYear(a.award_year_id, yearId)));
     // Add new ones
     awardIds.forEach((awardId) => {
       asgns.push({
@@ -1108,31 +1399,44 @@ export const localDB = {
     });
 
     const resultAwardIds = new Set<string>();
+    let foundInCloud = false;
 
     // 1. Semak padanan dalam cloudMap (Supabase system_settings sync)
     candidateKeys.forEach((key) => {
       const lowerKey = key.toLowerCase();
       if (cloudMap[lowerKey] && Array.isArray(cloudMap[lowerKey])) {
         cloudMap[lowerKey].forEach((id) => resultAwardIds.add(id));
+        foundInCloud = true;
       }
       if (cloudMap[key] && Array.isArray(cloudMap[key])) {
         cloudMap[key].forEach((id) => resultAwardIds.add(id));
+        foundInCloud = true;
       }
     });
 
+    if (foundInCloud) {
+      return Array.from(resultAwardIds);
+    }
+
     // 2. Semak padanan dalam kkbda_assignments (localStorage)
     const asgns = getStorage<EvaluatorAssignment[]>(STORAGE_KEYS.ASSIGNMENTS, getInitialAssignments());
+    let foundInAssignments = false;
     asgns.forEach((a) => {
-      if (!yearId || a.award_year_id === yearId) {
+      if (!yearId || matchesYear(a.award_year_id, yearId)) {
         const asgnEvalLower = (a.evaluator_id || '').toLowerCase();
         for (const k of candidateKeys) {
           if (k.toLowerCase() === asgnEvalLower) {
             resultAwardIds.add(a.award_id);
+            foundInAssignments = true;
             break;
           }
         }
       }
     });
+
+    if (foundInAssignments) {
+      return Array.from(resultAwardIds);
+    }
 
     // 3. Fallback pemetaan rasmi panel KKBDA jika belum ditetapkan secara khusus
     if (resultAwardIds.size === 0) {
@@ -1156,7 +1460,7 @@ export const localDB = {
       } else if (checkNames.some((n) => n.includes('azzah')) || candidateKeys.has('colab') || candidateKeys.has('colab@auth.eapresiasi.local')) {
         resultAwardIds.add('award-8');
       } else if (checkNames.some((n) => n.includes('muffili')) || candidateKeys.has('kupik') || candidateKeys.has('kupik@auth.eapresiasi.local')) {
-        ['award-5', 'award-6'].forEach((id) => resultAwardIds.add(id));
+        ['award-5', 'award-6', 'award-16'].forEach((id) => resultAwardIds.add(id));
       }
     }
 
@@ -1176,7 +1480,7 @@ export const localDB = {
     );
     const asgns = getStorage<EvaluatorAssignment[]>(STORAGE_KEYS.ASSIGNMENTS, getInitialAssignments());
     for (const a of asgns) {
-      if (a.award_id === awardId && (!yearId || a.award_year_id === yearId)) {
+      if (a.award_id === awardId && (!yearId || matchesYear(a.award_year_id, yearId))) {
         const asgnEvalLower = (a.evaluator_id || '').toLowerCase();
         for (const k of candidateKeys) {
           if (k.toLowerCase() === asgnEvalLower) {
@@ -1209,12 +1513,192 @@ export const localDB = {
   },
 
   // CANDIDATES & AGGREGATES
+  // CANDIDATES & AGGREGATES CLOUD SYNC
+  syncCandidatesFromCloud: async (): Promise<void> => {
+    try {
+      const { data } = await supabase
+        .from('system_settings')
+        .select('value')
+        .eq('key', 'panel_candidates_sync')
+        .maybeSingle();
+
+      if (data?.value) {
+        const cloudData = JSON.parse(data.value) as {
+          candidates?: PanelCandidate[];
+          evaluations?: Evaluation[];
+          scores?: EvaluationScore[];
+          aggregates?: CandidateAggregate[];
+          mgmtSelections?: ManagementSelection[];
+          dirSelections?: DirectorSelection[];
+          cloudAssignments?: Record<string, string[]>;
+          assignments?: EvaluatorAssignment[];
+          itemSets?: AwardItemSet[];
+          items?: AwardItem[];
+          awards?: Award[];
+        };
+
+        if (Array.isArray(cloudData.awards) && cloudData.awards.length > 0) {
+          const localAwards = getStorage<Award[]>(STORAGE_KEYS.AWARDS, []);
+          const awardMap = new Map(localAwards.map((a) => [a.id, a]));
+          cloudData.awards.forEach((a) => awardMap.set(a.id, a));
+          setStorage(STORAGE_KEYS.AWARDS, Array.from(awardMap.values()).sort((a, b) => a.sort_order - b.sort_order));
+        }
+
+        if (cloudData.cloudAssignments && typeof cloudData.cloudAssignments === 'object') {
+          const currentMap = getStorage<Record<string, string[]>>(STORAGE_KEYS.CLOUD_ASSIGNMENTS, {});
+          const mergedMap = { ...currentMap, ...cloudData.cloudAssignments };
+          setStorage(STORAGE_KEYS.CLOUD_ASSIGNMENTS, mergedMap);
+        }
+
+        if (Array.isArray(cloudData.assignments) && cloudData.assignments.length > 0) {
+          const localAsgns = getStorage<EvaluatorAssignment[]>(STORAGE_KEYS.ASSIGNMENTS, []);
+          const asgnMap = new Map(localAsgns.map((a) => [`${a.evaluator_id}-${a.award_id}`, a]));
+          cloudData.assignments.forEach((a) => asgnMap.set(`${a.evaluator_id}-${a.award_id}`, a));
+          setStorage(STORAGE_KEYS.ASSIGNMENTS, Array.from(asgnMap.values()));
+        }
+
+        if (Array.isArray(cloudData.candidates) && cloudData.candidates.length > 0) {
+          const localCands = getStorage<PanelCandidate[]>(STORAGE_KEYS.CANDIDATES, []);
+          const candMap = new Map(localCands.map((c) => [c.id, c]));
+          cloudData.candidates.forEach((c) => candMap.set(c.id, c));
+          setStorage(STORAGE_KEYS.CANDIDATES, Array.from(candMap.values()));
+        }
+
+        if (Array.isArray(cloudData.evaluations) && cloudData.evaluations.length > 0) {
+          const localEvals = getStorage<Evaluation[]>(STORAGE_KEYS.EVALUATIONS, []);
+          const evalMap = new Map(localEvals.map((e) => [e.id, e]));
+          cloudData.evaluations.forEach((e) => evalMap.set(e.id, e));
+          setStorage(STORAGE_KEYS.EVALUATIONS, Array.from(evalMap.values()));
+        }
+
+        if (Array.isArray(cloudData.scores) && cloudData.scores.length > 0) {
+          const localScores = getStorage<EvaluationScore[]>(STORAGE_KEYS.SCORES, []);
+          const scoreMap = new Map(localScores.map((s) => [s.id, s]));
+          cloudData.scores.forEach((s) => scoreMap.set(s.id, s));
+          setStorage(STORAGE_KEYS.SCORES, Array.from(scoreMap.values()));
+        }
+
+        if (Array.isArray(cloudData.aggregates) && cloudData.aggregates.length > 0) {
+          const localAggs = getStorage<CandidateAggregate[]>(STORAGE_KEYS.AGGREGATES, []);
+          const aggMap = new Map(localAggs.map((a) => [a.id, a]));
+          cloudData.aggregates.forEach((a) => aggMap.set(a.id, a));
+          setStorage(STORAGE_KEYS.AGGREGATES, Array.from(aggMap.values()));
+        }
+
+        if (Array.isArray(cloudData.mgmtSelections) && cloudData.mgmtSelections.length > 0) {
+          const localMgmts = getStorage<ManagementSelection[]>(STORAGE_KEYS.MGMT_SELECTIONS, []);
+          const mgmtMap = new Map(localMgmts.map((m) => [m.id, m]));
+          cloudData.mgmtSelections.forEach((m) => mgmtMap.set(m.id, m));
+          setStorage(STORAGE_KEYS.MGMT_SELECTIONS, Array.from(mgmtMap.values()));
+        }
+
+        if (Array.isArray(cloudData.dirSelections) && cloudData.dirSelections.length > 0) {
+          const localDirs = getStorage<DirectorSelection[]>(STORAGE_KEYS.DIR_SELECTIONS, []);
+          const dirMap = new Map(localDirs.map((d) => [d.id, d]));
+          cloudData.dirSelections.forEach((d) => dirMap.set(d.id, d));
+          setStorage(STORAGE_KEYS.DIR_SELECTIONS, Array.from(dirMap.values()));
+        }
+
+        if (Array.isArray(cloudData.itemSets) && cloudData.itemSets.length > 0) {
+          const localSets = getStorage<AwardItemSet[]>(STORAGE_KEYS.ITEM_SETS, []);
+          const setMap = new Map(localSets.map((s) => [s.id, s]));
+          cloudData.itemSets.forEach((s) => setMap.set(s.id, s));
+          setStorage(STORAGE_KEYS.ITEM_SETS, Array.from(setMap.values()));
+        }
+
+        if (Array.isArray(cloudData.items) && cloudData.items.length > 0) {
+          const localItems = getStorage<AwardItem[]>(STORAGE_KEYS.ITEMS, []);
+          const itemMap = new Map(localItems.map((i) => [i.id, i]));
+          cloudData.items.forEach((i) => itemMap.set(i.id, i));
+          setStorage(STORAGE_KEYS.ITEMS, Array.from(itemMap.values()));
+        }
+      }
+    } catch (e) {
+      console.warn('Sync candidates from cloud notice:', e);
+    }
+  },
+
+  saveCandidatesToCloud: async (): Promise<void> => {
+    try {
+      const candidates = getStorage<PanelCandidate[]>(STORAGE_KEYS.CANDIDATES, []);
+      const evaluations = getStorage<Evaluation[]>(STORAGE_KEYS.EVALUATIONS, []);
+      const scores = getStorage<EvaluationScore[]>(STORAGE_KEYS.SCORES, []);
+      const aggregates = getStorage<CandidateAggregate[]>(STORAGE_KEYS.AGGREGATES, []);
+      const mgmtSelections = getStorage<ManagementSelection[]>(STORAGE_KEYS.MGMT_SELECTIONS, []);
+      const dirSelections = getStorage<DirectorSelection[]>(STORAGE_KEYS.DIR_SELECTIONS, []);
+      const cloudAssignments = getStorage<Record<string, string[]>>(STORAGE_KEYS.CLOUD_ASSIGNMENTS, {});
+      const assignments = getStorage<EvaluatorAssignment[]>(STORAGE_KEYS.ASSIGNMENTS, []);
+      const itemSets = localDB.getItemSets();
+      const items = getStorage<AwardItem[]>(STORAGE_KEYS.ITEMS, []);
+      const awards = localDB.getAwards();
+
+      const payload = JSON.stringify({
+        candidates,
+        evaluations,
+        scores,
+        aggregates,
+        mgmtSelections,
+        dirSelections,
+        cloudAssignments,
+        assignments,
+        itemSets,
+        items,
+        awards,
+      });
+
+      await supabase
+        .from('system_settings')
+        .upsert(
+          { key: 'panel_candidates_sync', value: payload, updated_at: new Date().toISOString() },
+          { onConflict: 'key' }
+        );
+    } catch (e) {
+      console.warn('Save candidates to cloud notice:', e);
+    }
+  },
+
   getCandidates: (awardId?: string, yearId?: string, panelId?: string): (PanelCandidate & { evaluations?: Evaluation[] })[] => {
     let cands = getStorage<PanelCandidate[]>(STORAGE_KEYS.CANDIDATES, []);
     const evals = getStorage<Evaluation[]>(STORAGE_KEYS.EVALUATIONS, []);
     if (awardId) cands = cands.filter((c) => c.award_id === awardId);
-    if (yearId) cands = cands.filter((c) => c.award_year_id === yearId);
-    if (panelId) cands = cands.filter((c) => c.panel_id === panelId || c.created_by === panelId);
+    if (yearId) cands = cands.filter((c) => matchesYear(c.award_year_id, yearId));
+    if (panelId) {
+      const cleanPanelId = panelId.toLowerCase().trim();
+      const evalsList = localDB.getEvaluators();
+      const profsList = localDB.getProfiles();
+      const matchedEval = evalsList.find(
+        (e) => e.id === panelId || e.profile_id === panelId || (e.email && e.email.toLowerCase() === cleanPanelId)
+      );
+      const matchedProf = profsList.find(
+        (p) => p.id === panelId || (p.username && p.username.toLowerCase() === cleanPanelId) || (p.email && p.email.toLowerCase() === cleanPanelId)
+      );
+      const validPanelIds = new Set(
+        [
+          panelId,
+          cleanPanelId,
+          matchedEval?.id,
+          matchedEval?.profile_id,
+          matchedProf?.id,
+          matchedProf?.username,
+          matchedEval?.email?.toLowerCase(),
+          matchedProf?.email?.toLowerCase(),
+        ].filter(Boolean) as string[]
+      );
+
+      if (
+        cleanPanelId.includes('muffili') ||
+        cleanPanelId === 'kupik' ||
+        cleanPanelId === '553189ea-d90a-4eeb-820c-6c1603cee752' ||
+        cleanPanelId === '6395b5de-78db-4e3b-9199-3b3926421aa0'
+      ) {
+        validPanelIds.add('553189ea-d90a-4eeb-820c-6c1603cee752');
+        validPanelIds.add('6395b5de-78db-4e3b-9199-3b3926421aa0');
+        validPanelIds.add('kupik');
+        validPanelIds.add('kupik@auth.eapresiasi.local');
+      }
+
+      cands = cands.filter((c) => validPanelIds.has(c.panel_id) || validPanelIds.has(c.created_by));
+    }
 
     return cands.map((c) => ({
       ...c,
@@ -1247,6 +1731,8 @@ export const localDB = {
       updated_at: new Date().toISOString(),
     });
     setStorage(STORAGE_KEYS.EVALUATIONS, evals);
+
+    localDB.saveCandidatesToCloud().catch(() => {});
 
     return newCand;
   },
@@ -1312,6 +1798,7 @@ export const localDB = {
       evals[evIdx].updated_at = new Date().toISOString();
       setStorage(STORAGE_KEYS.EVALUATIONS, evals);
     }
+    localDB.saveCandidatesToCloud().catch(() => {});
   },
   submitEvaluation: (params: {
     evaluationId: string;
@@ -1337,7 +1824,7 @@ export const localDB = {
     // Update Candidate Aggregates
     const aggs = getStorage<CandidateAggregate[]>(STORAGE_KEYS.AGGREGATES, []);
     const identifier = params.staffNumber || `${params.candidateName.toLowerCase().trim()}|${params.division.toLowerCase().trim()}`;
-    const aggIdx = aggs.findIndex((a) => a.award_id === params.awardId && a.award_year_id === params.yearId && a.candidate_identifier === identifier);
+    const aggIdx = aggs.findIndex((a) => a.award_id === params.awardId && matchesYear(a.award_year_id, params.yearId) && a.candidate_identifier === identifier);
 
     if (aggIdx !== -1) {
       const currentScores = (aggs[aggIdx].individual_scores || []) as number[];
@@ -1365,6 +1852,7 @@ export const localDB = {
       });
     }
     setStorage(STORAGE_KEYS.AGGREGATES, aggs);
+    localDB.saveCandidatesToCloud().catch(() => {});
   },
 
   // CANDIDATE AGGREGATES
@@ -1374,7 +1862,7 @@ export const localDB = {
     const awardMap = new Map(awards.map((a) => [a.id, a]));
 
     if (awardId) aggs = aggs.filter((a) => a.award_id === awardId);
-    if (yearId) aggs = aggs.filter((a) => a.award_year_id === yearId);
+    if (yearId) aggs = aggs.filter((a) => matchesYear(a.award_year_id, yearId));
 
     return aggs.map((a) => ({
       ...a,
@@ -1395,12 +1883,12 @@ export const localDB = {
   getManagementSelections: (awardId?: string, yearId?: string): ManagementSelection[] => {
     let sels = getStorage<ManagementSelection[]>(STORAGE_KEYS.MGMT_SELECTIONS, []);
     if (awardId) sels = sels.filter((s) => s.award_id === awardId);
-    if (yearId) sels = sels.filter((s) => s.award_year_id === yearId);
+    if (yearId) sels = sels.filter((s) => matchesYear(s.award_year_id, yearId));
     return sels;
   },
   toggleManagementSelection: (params: { candidateAggregateId: string; awardId: string; yearId: string; selected: boolean; userId: string }): void => {
     const sels = getStorage<ManagementSelection[]>(STORAGE_KEYS.MGMT_SELECTIONS, []);
-    const idx = sels.findIndex((s) => s.candidate_aggregate_id === params.candidateAggregateId && s.award_id === params.awardId && s.award_year_id === params.yearId);
+    const idx = sels.findIndex((s) => s.candidate_aggregate_id === params.candidateAggregateId && s.award_id === params.awardId && matchesYear(s.award_year_id, params.yearId));
     if (idx !== -1) {
       sels[idx].selected = params.selected;
       sels[idx].selected_by = params.userId;
@@ -1417,18 +1905,19 @@ export const localDB = {
       });
     }
     setStorage(STORAGE_KEYS.MGMT_SELECTIONS, sels);
+    localDB.saveCandidatesToCloud().catch(() => {});
   },
 
   // DIRECTOR SELECTIONS
   getDirectorSelections: (awardId?: string, yearId?: string): DirectorSelection[] => {
     let sels = getStorage<DirectorSelection[]>(STORAGE_KEYS.DIR_SELECTIONS, []);
     if (awardId) sels = sels.filter((s) => s.award_id === awardId);
-    if (yearId) sels = sels.filter((s) => s.award_year_id === yearId);
+    if (yearId) sels = sels.filter((s) => matchesYear(s.award_year_id, yearId));
     return sels;
   },
   toggleDirectorSelection: (params: { candidateAggregateId: string; awardId: string; yearId: string; selected: boolean; note?: string; userId: string }): void => {
     const sels = getStorage<DirectorSelection[]>(STORAGE_KEYS.DIR_SELECTIONS, []);
-    const idx = sels.findIndex((s) => s.candidate_aggregate_id === params.candidateAggregateId && s.award_id === params.awardId && s.award_year_id === params.yearId);
+    const idx = sels.findIndex((s) => s.candidate_aggregate_id === params.candidateAggregateId && s.award_id === params.awardId && matchesYear(s.award_year_id, params.yearId));
     if (idx !== -1) {
       sels[idx].selected = params.selected;
       sels[idx].director_note = params.note || null;
@@ -1447,6 +1936,7 @@ export const localDB = {
       });
     }
     setStorage(STORAGE_KEYS.DIR_SELECTIONS, sels);
+    localDB.saveCandidatesToCloud().catch(() => {});
   },
 
   // USER PROFILES & ROLES (MULTI-ROLE & PRODUCTION MANAGEMENT)
@@ -1532,7 +2022,7 @@ export const localDB = {
     const aggs = getStorage<CandidateAggregate[]>(STORAGE_KEYS.AGGREGATES, []);
     const identifier = cand.staff_number || `${cand.candidate_name.toLowerCase().trim()}|${cand.division.toLowerCase().trim()}`;
     const aggIdx = aggs.findIndex(
-      (a) => a.award_id === cand.award_id && a.award_year_id === cand.award_year_id && a.candidate_identifier === identifier
+      (a) => a.award_id === cand.award_id && matchesYear(a.award_year_id, cand.award_year_id) && a.candidate_identifier === identifier
     );
 
     if (aggIdx !== -1) {
@@ -1540,7 +2030,7 @@ export const localDB = {
       const otherSameCandidates = remainingCands.filter(
         (c) =>
           c.award_id === cand.award_id &&
-          c.award_year_id === cand.award_year_id &&
+          matchesYear(c.award_year_id, cand.award_year_id) &&
           (c.staff_number || `${c.candidate_name.toLowerCase().trim()}|${c.division.toLowerCase().trim()}`) === identifier
       );
 
@@ -1584,6 +2074,8 @@ export const localDB = {
       entityType: 'candidate',
       entityId: candidateId,
     });
+
+    localDB.saveCandidatesToCloud().catch(() => {});
 
     return { success: true };
   },
@@ -1645,6 +2137,8 @@ export const localDB = {
       details: `Memadam ${evaluationIds.length} rekod markah/penilaian ujian`,
       entityType: 'evaluation',
     });
+
+    localDB.saveCandidatesToCloud().catch(() => {});
 
     return { success: true, deletedCount: evaluationIds.length };
   },

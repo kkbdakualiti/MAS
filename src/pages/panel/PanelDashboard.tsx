@@ -31,39 +31,50 @@ export default function PanelDashboard() {
       if (!user || !activeYear) return;
       setLoading(true);
 
-      // Segerakkan tugasan kategori daripada Supabase Cloud (system_settings)
-      await localDB.syncAssignmentsFromCloud();
+      try {
+        await Promise.all([
+          localDB.syncAssignmentsFromCloud().catch(() => {}),
+          localDB.syncCandidatesFromCloud().catch(() => {}),
+        ]);
+      } catch (err) {
+        console.warn('Panel dashboard sync notice:', err);
+      }
 
-      const awards = localDB.getAwards().filter((a) => a.is_active);
-      const assignedIds = localDB.getAssignedAwardIds(user.id, user.email, activeYear.id);
-      const allCandidates = localDB.getCandidates('', activeYear.id, user.id);
+      try {
+        const awards = localDB.getAwards().filter((a) => a.is_active);
+        const assignedIds = localDB.getAssignedAwardIds(user.id, user.email, activeYear.id);
+        const allCandidates = localDB.getCandidates('', activeYear.id, user.id || profile?.id);
 
-      const list: AssignedCategory[] = awards.map((award) => {
-        const asgn = localDB.getEvaluatorAssignment(user.id, user.email, award.id, activeYear.id);
-        const assignedDivision = asgn?.division || profile?.division || (profile?.position?.toUpperCase().includes('SKE') ? 'SKE' : (profile?.position?.toUpperCase().includes('STS') ? 'STS' : (profile?.position?.toUpperCase().includes('STM') ? 'STM' : (profile?.position?.toUpperCase().includes('SAU') ? 'SAU' : (profile?.position?.toUpperCase().includes('DCV') ? 'DCV' : (profile?.position?.toUpperCase().includes('AM') ? 'AM' : null))))));
-        let cands = allCandidates.filter((c) => c.award_id === award.id);
-        if (award.name.toLowerCase().includes('pdp') && assignedDivision) {
-          cands = cands.filter((c) => !c.division || c.division.toUpperCase() === assignedDivision.toUpperCase());
-        }
-        const formatted = cands.map((c) => {
-          const ev = c.evaluations?.[0];
+        const list: AssignedCategory[] = awards.map((award) => {
+          const asgn = localDB.getEvaluatorAssignment(user.id, user.email, award.id, activeYear.id);
+          const assignedDivision = asgn?.division || profile?.division || (profile?.position?.toUpperCase().includes('SKE') ? 'SKE' : (profile?.position?.toUpperCase().includes('STS') ? 'STS' : (profile?.position?.toUpperCase().includes('STM') ? 'STM' : (profile?.position?.toUpperCase().includes('SAU') ? 'SAU' : (profile?.position?.toUpperCase().includes('DCV') ? 'DCV' : (profile?.position?.toUpperCase().includes('AM') ? 'AM' : null))))));
+          let cands = allCandidates.filter((c) => c.award_id === award.id);
+          if (award.name.toLowerCase().includes('pdp') && assignedDivision) {
+            cands = cands.filter((c) => !c.division || c.division.toUpperCase() === assignedDivision.toUpperCase());
+          }
+          const formatted = cands.map((c) => {
+            const ev = c.evaluations?.[0];
+            return {
+              ...c,
+              score: ev?.total_score,
+              isSubmitted: ev?.status === 'submitted',
+            };
+          });
           return {
-            ...c,
-            score: ev?.total_score,
-            isSubmitted: ev?.status === 'submitted',
+            award,
+            myCandidates: formatted,
+            isOpen: true,
+            isAssigned: assignedIds.includes(award.id),
+            assignedDivision,
           };
         });
-        return {
-          award,
-          myCandidates: formatted,
-          isOpen: true,
-          isAssigned: assignedIds.includes(award.id),
-          assignedDivision,
-        };
-      });
 
-      setCategories(list);
-      setLoading(false);
+        setCategories(list);
+      } catch (err) {
+        console.error('Error computing panel dashboard categories:', err);
+      } finally {
+        setLoading(false);
+      }
     }
 
     fetchPanelAssignments();

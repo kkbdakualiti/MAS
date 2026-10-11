@@ -67,7 +67,7 @@ export const DEFAULT_CATEGORIES = [
   'Ikon Kokurikulum',
   'Mentor Keusahawanan',
   'Ikon Pembelajaran & Pengajaran',
-  'Ikon Penyelidikan & Inovasi',
+  'Ikon Penyelidikan',
   'Ikon Penerbitan',
   'Ikon PSH',
   'Ikon Kolaborasi',
@@ -78,6 +78,8 @@ export const DEFAULT_CATEGORIES = [
   'Kehadiran Terbaik',
   'Staf Sokongan Terbaik',
   'Ikon Pengurusan',
+  'Ikon Inovasi',
+  'Anugerah Ketua Program Terbaik',
 ];
 
 // Department divisions specifically for Pengurusan PdP Terbaik

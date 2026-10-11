@@ -31,6 +31,7 @@ export default function AddCandidate() {
     async function checkPermission() {
       if (!user || !awardId || !activeYear) return;
       await localDB.syncAssignmentsFromCloud();
+      await localDB.syncCandidatesFromCloud();
       const assignedIds = localDB.getAssignedAwardIds(user.id, user.email, activeYear.id);
       if (!assignedIds.includes(awardId)) {
         toast.error('Akses ditolak: Kategori ini tidak ditugaskan kepada anda.');
@@ -96,7 +97,7 @@ export default function AddCandidate() {
       navigate(`/panel/award/${awardId}/score/${newCand.id}`);
     } catch (err: any) {
       console.error('Error adding candidate:', err);
-      toast.error('Ralat menambah calon.');
+      toast.error(err?.message || 'Ralat menambah calon.');
       setLoading(false);
     }
   };

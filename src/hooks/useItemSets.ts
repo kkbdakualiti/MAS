@@ -16,7 +16,10 @@ export function useItemSets() {
       try {
         const { data, error } = await supabase.from('award_item_sets').select('*, award_items(*)').order('created_at', { ascending: false });
         if (error) throw error;
-        return (data || []) as AwardItemSet[];
+        if (data && data.length > 0) {
+          return data as AwardItemSet[];
+        }
+        return localDB.getItemSets();
       } catch {
         return localDB.getItemSets();
       }
@@ -26,14 +29,18 @@ export function useItemSets() {
   const create = useMutation({
     mutationFn: async (name: string) => {
       if (!isSupabaseConfigured()) {
-        return localDB.createItemSet(name);
+        const created = localDB.createItemSet(name);
+        localDB.saveCandidatesToCloud().catch(() => {});
+        return created;
       }
       try {
         const { data, error } = await supabase.from('award_item_sets').insert({ name }).select().single();
         if (error) throw error;
         return data;
       } catch {
-        return localDB.createItemSet(name);
+        const created = localDB.createItemSet(name);
+        localDB.saveCandidatesToCloud().catch(() => {});
+        return created;
       }
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['item-sets'] }); toast.success('Set item berjaya dicipta.'); },
@@ -44,6 +51,7 @@ export function useItemSets() {
     mutationFn: async ({ id, ...input }: { id: string; name?: string; award_id?: string | null; total_max_score?: number; is_complete?: boolean }) => {
       if (!isSupabaseConfigured()) {
         localDB.updateItemSet(id, input);
+        localDB.saveCandidatesToCloud().catch(() => {});
         return;
       }
       try {
@@ -51,6 +59,7 @@ export function useItemSets() {
         if (error) throw error;
       } catch {
         localDB.updateItemSet(id, input);
+        localDB.saveCandidatesToCloud().catch(() => {});
       }
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['item-sets'] }); toast.success('Set item berjaya dikemas kini.'); },
@@ -61,6 +70,7 @@ export function useItemSets() {
     mutationFn: async (id: string) => {
       if (!isSupabaseConfigured()) {
         localDB.deleteItemSet(id);
+        localDB.saveCandidatesToCloud().catch(() => {});
         return;
       }
       try {
@@ -68,6 +78,7 @@ export function useItemSets() {
         if (error) throw error;
       } catch {
         localDB.deleteItemSet(id);
+        localDB.saveCandidatesToCloud().catch(() => {});
       }
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['item-sets'] }); toast.success('Set item berjaya dipadam.'); },
@@ -89,7 +100,10 @@ export function useAwardItems(setId: string) {
       try {
         const { data, error } = await supabase.from('award_items').select('*').eq('item_set_id', setId).order('sort_order');
         if (error) throw error;
-        return (data || []) as AwardItem[];
+        if (data && data.length > 0) {
+          return data as AwardItem[];
+        }
+        return localDB.getItemsBySet(setId);
       } catch {
         return localDB.getItemsBySet(setId);
       }

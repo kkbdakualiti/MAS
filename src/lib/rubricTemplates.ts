@@ -343,12 +343,12 @@ export const OFFICIAL_RUBRIC_TEMPLATES: TemplateSetDef[] = [
     ],
   },
 
-  // 5. IKON PENYELIDIKAN & INOVASI
+  // 5. IKON PENYELIDIKAN
   {
     setId: 'set-penyelidikan',
     awardId: 'award-5',
-    awardName: 'Ikon Penyelidikan & Inovasi',
-    setName: 'Rubrik Ikon Penyelidikan & Inovasi',
+    awardName: 'Ikon Penyelidikan',
+    setName: 'Rubrik Ikon Penyelidikan',
     items: [
       {
         name: 'Penghasilan penyelidikan & projek inovasi',
@@ -922,6 +922,122 @@ export const OFFICIAL_RUBRIC_TEMPLATES: TemplateSetDef[] = [
       },
     ],
   },
+
+  // 16. IKON INOVASI
+  {
+    setId: 'set-ikon-inovasi',
+    awardId: 'award-16',
+    awardName: 'Ikon Inovasi',
+    setName: 'Rubrik Ikon Inovasi – Peringkat Institusi',
+    items: [
+      {
+        name: 'Penghasilan & Kreativiti Projek Inovasi',
+        description: 'Penghasilan produk/sistem/modul inovasi yang asli, kreatif dan berdaya saing.',
+        wajaran: 30,
+        rubric_levels: {
+          level_5: 'Inovasi sangat asli, kreatif, berkualiti tinggi dan berimpak tinggi.',
+          level_4: 'Inovasi kreatif dengan bukti pelaksanaan yang kukuh.',
+          level_3: 'Penghasilan inovasi yang baik dan berfungsi.',
+          level_2: 'Inovasi pada tahap sederhana.',
+          level_1: 'Inovasi kurang kreatif dan bukti terhad.',
+        },
+      },
+      {
+        name: 'Pencapaian & Pengiktirafan Pertandingan Inovasi',
+        description: 'Kejayaan memenangi anugerah/pingat dalam pertandingan inovasi peringkat Zon/Kebangsaan/Antarabangsa.',
+        wajaran: 30,
+        rubric_levels: {
+          level_5: 'Memenangi Pingat Emas / Anugerah Utama peringkat Kebangsaan atau Antarabangsa.',
+          level_4: 'Memenangi Pingat Perak/Gangsa peringkat Kebangsaan atau Emas peringkat Negeri.',
+          level_3: 'Menyertai pertandingan inovasi peringkat Zon/Negeri dengan sijil penghargaan.',
+          level_2: 'Penyertaan pertandingan peringkat institusi.',
+          level_1: 'Tiada penyertaan pertandingan inovasi.',
+        },
+      },
+      {
+        name: 'Kebolehgunaan & Impak kepada Institusi/Komuniti',
+        description: 'Tahap aplikasi inovasi secara praktikal bagi menyelesaikan masalah institusi atau komuniti.',
+        wajaran: 20,
+        rubric_levels: {
+          level_5: 'Diguna pakai secara meluas di institusi/komuniti/industri atau dikomersialkan.',
+          level_4: 'Diguna pakai dengan berkesan di peringkat institusi.',
+          level_3: 'Mempunyai potensi aplikasi yang baik.',
+          level_2: 'Aplikasi terhad kepada kelompok kecil.',
+          level_1: 'Tiada bukti kebolehgunaan.',
+        },
+      },
+      {
+        name: 'Pembudayaan & Pembimbingan Inovasi',
+        description: 'Sumbangan membimbing staf/pelajar dan menggerakkan budaya inovasi.',
+        wajaran: 20,
+        rubric_levels: {
+          level_5: 'Sangat proaktif membimbing pasukan inovasi staf/pelajar dan menjadi pakar rujuk.',
+          level_4: 'Aktif membimbing pasukan inovasi dengan konsisten.',
+          level_3: 'Terlibat dalam aktiviti pembudayaan inovasi.',
+          level_2: 'Penglibatan pembudayaan inovasi terhad.',
+          level_1: 'Tiada penglibatan dalam pembudayaan inovasi.',
+        },
+      },
+    ],
+  },
+
+  // 17. ANUGERAH KETUA PROGRAM TERBAIK
+  {
+    setId: 'set-kp-terbaik',
+    awardId: 'award-17',
+    awardName: 'Anugerah Ketua Program Terbaik',
+    setName: 'Rubrik Anugerah Ketua Program Terbaik – Peringkat Institusi',
+    items: [
+      {
+        name: 'Kepimpinan & Pengurusan Kurikulum Program',
+        description: 'Kecekapan memimpin program akademik, pengurusan Fail Program, akreditasi dan kualiti PdP.',
+        wajaran: 30,
+        rubric_levels: {
+          level_5: 'Kepimpinan cemerlang, pengurusan akreditasi/MQA/JPPKK sempurna dan PdP program diiktiraf.',
+          level_4: 'Pengurusan program akademik sangat teratur dan mematuhi standard kualiti.',
+          level_3: 'Mengurus program akademik dengan baik mengikut garis panduan.',
+          level_2: 'Pengurusan program pada tahap memuaskan tetapi ada kekurangan.',
+          level_1: 'Pengurusan program kurang memuaskan dan lewat tindakan.',
+        },
+      },
+      {
+        name: 'Pencapaian KPI Program & Kebolehpasaran Graduan',
+        description: 'Pencapaian peratusan pendaftaran pelajar, kadar kebolehpasaran graduan (GE) dan WBL.',
+        wajaran: 30,
+        rubric_levels: {
+          level_5: 'Melebihi sasaran pendaftaran pelajar dan peratus kebolehpasaran graduan >90%.',
+          level_4: 'Mencapai sasaran KPI pendaftaran dan kebolehpasaran graduan yang tinggi.',
+          level_3: 'Mencapai sasaran asas KPI program.',
+          level_2: 'Pencapaian KPI program pada tahap sederhana.',
+          level_1: 'Pencapaian KPI program di bawah sasaran.',
+        },
+      },
+      {
+        name: 'Jalinan Kolaborasi Industri & Program Impak Tinggi',
+        description: 'Inisiatif merintis hubungan industri, penempatan Latihan Industri dan penganjuran aktiviti program.',
+        wajaran: 20,
+        rubric_levels: {
+          level_5: 'Berjaya memeterai MoU/NoU bersama industri utama dan menganjurkan pelbagai program impak tinggi.',
+          level_4: 'Mempunyai hubungan industri yang kukuh dan jalinan latihan industri berkualiti.',
+          level_3: 'Melaksanakan program kerjasama industri asas.',
+          level_2: 'Jalinan industri terhad.',
+          level_1: 'Tiada inisiatif jalinan industri.',
+        },
+      },
+      {
+        name: 'Sahsiah, Kepimpinan Berpasukan & Integriti Pentadbiran',
+        description: 'Keupayaan memotivasikan pensyarah program, penyelesaian masalah dan integriti kepimpinan.',
+        wajaran: 20,
+        rubric_levels: {
+          level_5: 'Sangat dihormati, keupayaan memotivasikan pasukan cemerlang dan integriti tinggi.',
+          level_4: 'Mempunyai kebolehan memimpin pasukan pensyarah dengan harmoini dan berkesan.',
+          level_3: 'Menjalankan tugas kepimpinan berpasukan dengan baik.',
+          level_2: 'Kepimpinan berpasukan pada tahap sederhana.',
+          level_1: 'Kurang menonjolkan ciri kepimpinan berpasukan.',
+        },
+      },
+    ],
+  },
 ];
 
 // Helper to get template for an award by ID or name
@@ -958,7 +1074,7 @@ export function generateInitialItemSetsAndItems(): { sets: AwardItemSet[]; items
 
     tmpl.items.forEach((itemDef, idx) => {
       const itemRecord: AwardItem = {
-        id: '${tmpl.setId}-item-' + (idx + 1),
+        id: `${tmpl.setId}-item-${idx + 1}`,
         item_set_id: tmpl.setId,
         name: itemDef.name,
         description: itemDef.description,

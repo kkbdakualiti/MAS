@@ -9,15 +9,24 @@ export function useCandidateAggregates(awardId?: string, yearId?: string) {
   return useQuery({
     queryKey: ['candidate-aggregates', awardId, yearId],
     queryFn: async () => {
+      await localDB.syncCandidatesFromCloud();
       if (!isSupabaseConfigured()) {
         return localDB.getAggregates(awardId, yearId);
       }
       try {
         let q = supabase.from('candidate_aggregates').select('*, award:awards(*)');
         if (awardId) q = q.eq('award_id', awardId);
-        if (yearId) q = q.eq('award_year_id', yearId);
+        if (yearId) {
+          const possibleYears = [yearId];
+          if (yearId === 'year-2026' || yearId === 'fdb36a98-2c1c-418f-abf6-d4815b9b9ad9') {
+            possibleYears.push('year-2026', 'fdb36a98-2c1c-418f-abf6-d4815b9b9ad9');
+          }
+          q = q.in('award_year_id', Array.from(new Set(possibleYears)));
+        }
         const { data, error } = await q.order('average_score', { ascending: false });
-        if (error) throw error;
+        if (error || !data || data.length === 0) {
+          return localDB.getAggregates(awardId, yearId);
+        }
         return (data || []) as (CandidateAggregate & { award: any })[];
       } catch {
         return localDB.getAggregates(awardId, yearId);
@@ -34,15 +43,24 @@ export function useManagementSelections(awardId?: string, yearId?: string) {
   const query = useQuery({
     queryKey: ['management-selections', awardId, yearId],
     queryFn: async () => {
+      await localDB.syncCandidatesFromCloud();
       if (!isSupabaseConfigured()) {
         return localDB.getManagementSelections(awardId, yearId);
       }
       try {
         let q = supabase.from('management_selections').select('*');
         if (awardId) q = q.eq('award_id', awardId);
-        if (yearId) q = q.eq('award_year_id', yearId);
+        if (yearId) {
+          const possibleYears = [yearId];
+          if (yearId === 'year-2026' || yearId === 'fdb36a98-2c1c-418f-abf6-d4815b9b9ad9') {
+            possibleYears.push('year-2026', 'fdb36a98-2c1c-418f-abf6-d4815b9b9ad9');
+          }
+          q = q.in('award_year_id', Array.from(new Set(possibleYears)));
+        }
         const { data, error } = await q;
-        if (error) throw error;
+        if (error || !data || data.length === 0) {
+          return localDB.getManagementSelections(awardId, yearId);
+        }
         return (data || []) as ManagementSelection[];
       } catch {
         return localDB.getManagementSelections(awardId, yearId);
@@ -53,43 +71,37 @@ export function useManagementSelections(awardId?: string, yearId?: string) {
 
   const toggle = useMutation({
     mutationFn: async (params: { candidateAggregateId: string; awardId: string; yearId: string; selected: boolean }) => {
-      if (!isSupabaseConfigured()) {
-        localDB.toggleManagementSelection({
-          ...params,
-          userId: user?.id || 'demo-user',
-        });
-        return;
-      }
-      try {
-        const { data: existing } = await supabase
-          .from('management_selections')
-          .select('*')
-          .eq('candidate_aggregate_id', params.candidateAggregateId)
-          .eq('award_id', params.awardId)
-          .eq('award_year_id', params.yearId)
-          .single();
+      localDB.toggleManagementSelection({
+        ...params,
+        userId: user?.id || 'demo-user',
+      });
+      if (isSupabaseConfigured()) {
+        try {
+          const { data: existing } = await supabase
+            .from('management_selections')
+            .select('*')
+            .eq('candidate_aggregate_id', params.candidateAggregateId)
+            .eq('award_id', params.awardId)
+            .eq('award_year_id', params.yearId)
+            .single();
 
-        if (existing) {
-          const { error } = await supabase.from('management_selections')
-            .update({ selected: params.selected, selected_by: user?.id, selected_at: new Date().toISOString() })
-            .eq('id', existing.id);
-          if (error) throw error;
-        } else {
-          const { error } = await supabase.from('management_selections').insert({
-            candidate_aggregate_id: params.candidateAggregateId,
-            award_id: params.awardId,
-            award_year_id: params.yearId,
-            selected: params.selected,
-            selected_by: user?.id,
-            selected_at: new Date().toISOString(),
-          });
-          if (error) throw error;
+          if (existing) {
+            await supabase.from('management_selections')
+              .update({ selected: params.selected, selected_by: user?.id, selected_at: new Date().toISOString() })
+              .eq('id', existing.id);
+          } else {
+            await supabase.from('management_selections').insert({
+              candidate_aggregate_id: params.candidateAggregateId,
+              award_id: params.awardId,
+              award_year_id: params.yearId,
+              selected: params.selected,
+              selected_by: user?.id,
+              selected_at: new Date().toISOString(),
+            });
+          }
+        } catch (e) {
+          console.warn('Supabase toggle mgmt selection notice:', e);
         }
-      } catch {
-        localDB.toggleManagementSelection({
-          ...params,
-          userId: user?.id || 'demo-user',
-        });
       }
     },
     onSuccess: () => {
@@ -109,15 +121,24 @@ export function useDirectorSelections(awardId?: string, yearId?: string) {
   const query = useQuery({
     queryKey: ['director-selections', awardId, yearId],
     queryFn: async () => {
+      await localDB.syncCandidatesFromCloud();
       if (!isSupabaseConfigured()) {
         return localDB.getDirectorSelections(awardId, yearId);
       }
       try {
         let q = supabase.from('director_selections').select('*');
         if (awardId) q = q.eq('award_id', awardId);
-        if (yearId) q = q.eq('award_year_id', yearId);
+        if (yearId) {
+          const possibleYears = [yearId];
+          if (yearId === 'year-2026' || yearId === 'fdb36a98-2c1c-418f-abf6-d4815b9b9ad9') {
+            possibleYears.push('year-2026', 'fdb36a98-2c1c-418f-abf6-d4815b9b9ad9');
+          }
+          q = q.in('award_year_id', Array.from(new Set(possibleYears)));
+        }
         const { data, error } = await q;
-        if (error) throw error;
+        if (error || !data || data.length === 0) {
+          return localDB.getDirectorSelections(awardId, yearId);
+        }
         return (data || []) as DirectorSelection[];
       } catch {
         return localDB.getDirectorSelections(awardId, yearId);
@@ -128,42 +149,38 @@ export function useDirectorSelections(awardId?: string, yearId?: string) {
 
   const toggle = useMutation({
     mutationFn: async (params: { candidateAggregateId: string; awardId: string; yearId: string; selected: boolean; note?: string }) => {
-      if (!isSupabaseConfigured()) {
-        localDB.toggleDirectorSelection({
-          ...params,
-          userId: user?.id || 'demo-user',
-        });
-        return;
-      }
-      try {
-        const { data: existing } = await supabase
-          .from('director_selections')
-          .select('*')
-          .eq('candidate_aggregate_id', params.candidateAggregateId)
-          .eq('award_id', params.awardId)
-          .eq('award_year_id', params.yearId)
-          .single();
+      localDB.toggleDirectorSelection({
+        ...params,
+        userId: user?.id || 'demo-user',
+      });
+      if (isSupabaseConfigured()) {
+        try {
+          const { data: existing } = await supabase
+            .from('director_selections')
+            .select('*')
+            .eq('candidate_aggregate_id', params.candidateAggregateId)
+            .eq('award_id', params.awardId)
+            .eq('award_year_id', params.yearId)
+            .single();
 
-        if (existing) {
-          await supabase.from('director_selections')
-            .update({ selected: params.selected, selected_by: user?.id, selected_at: new Date().toISOString(), director_note: params.note || null })
-            .eq('id', existing.id);
-        } else {
-          await supabase.from('director_selections').insert({
-            candidate_aggregate_id: params.candidateAggregateId,
-            award_id: params.awardId,
-            award_year_id: params.yearId,
-            selected: params.selected,
-            selected_by: user?.id,
-            selected_at: new Date().toISOString(),
-            director_note: params.note || null,
-          });
+          if (existing) {
+            await supabase.from('director_selections')
+              .update({ selected: params.selected, selected_by: user?.id, selected_at: new Date().toISOString(), director_note: params.note || null })
+              .eq('id', existing.id);
+          } else {
+            await supabase.from('director_selections').insert({
+              candidate_aggregate_id: params.candidateAggregateId,
+              award_id: params.awardId,
+              award_year_id: params.yearId,
+              selected: params.selected,
+              selected_by: user?.id,
+              selected_at: new Date().toISOString(),
+              director_note: params.note || null,
+            });
+          }
+        } catch (e) {
+          console.warn('Supabase toggle director selection notice:', e);
         }
-      } catch {
-        localDB.toggleDirectorSelection({
-          ...params,
-          userId: user?.id || 'demo-user',
-        });
       }
     },
     onSuccess: () => {

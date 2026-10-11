@@ -50,40 +50,45 @@ export default function CandidateList() {
     if (!candidateToDelete || !user || !currentRole) return;
     setIsDeleting(true);
     try {
-      if (!isSupabaseConfigured()) {
-        const result = localDB.deleteCandidate(
-          candidateToDelete.id,
-          user.id,
-          currentRole,
-          profile?.full_name || user.email || 'Pengguna'
-        );
-        if (!result.success) {
-          toast.error(result.error || 'Gagal memadam calon.');
-          setIsDeleting(false);
-          return;
+      const result = localDB.deleteCandidate(
+        candidateToDelete.id,
+        user.id,
+        currentRole,
+        profile?.full_name || user.email || 'Pengguna'
+      );
+
+      if (!result.success) {
+        toast.error(result.error || 'Gagal memadam calon.');
+        setIsDeleting(false);
+        return;
+      }
+
+      if (isSupabaseConfigured()) {
+        try {
+          const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(candidateToDelete.id);
+          if (isUuid) {
+            await supabase
+              .from('evaluations')
+              .delete()
+              .eq('panel_candidate_id', candidateToDelete.id);
+            await supabase
+              .from('panel_candidates')
+              .delete()
+              .eq('id', candidateToDelete.id);
+          }
+
+          await supabase.from('audit_logs').insert({
+            user_id: user.id,
+            user_name: profile?.full_name || user.email || 'Pengguna',
+            user_role: currentRole,
+            action: 'Padam Calon',
+            details: `Memadam calon: ${candidateToDelete.candidate_name} (${candidateToDelete.division})`,
+            entity_type: 'candidate',
+            entity_id: candidateToDelete.id,
+          });
+        } catch (e) {
+          console.warn('Supabase audit/delete sync notice:', e);
         }
-      } else {
-        const { error: evalErr } = await supabase
-          .from('evaluations')
-          .delete()
-          .eq('panel_candidate_id', candidateToDelete.id);
-        if (evalErr) console.warn('Child eval delete warning:', evalErr);
-
-        const { error: candErr } = await supabase
-          .from('panel_candidates')
-          .delete()
-          .eq('id', candidateToDelete.id);
-        if (candErr) throw candErr;
-
-        await supabase.from('audit_logs').insert({
-          user_id: user.id,
-          user_name: profile?.full_name || user.email || 'Pengguna',
-          user_role: currentRole,
-          action: 'Padam Calon',
-          details: `Memadam calon: ${candidateToDelete.candidate_name} (${candidateToDelete.division})`,
-          entity_type: 'candidate',
-          entity_id: candidateToDelete.id,
-        });
       }
 
       toast.success(`Calon "${candidateToDelete.candidate_name}" berjaya dipadam.`);
@@ -102,6 +107,7 @@ export default function CandidateList() {
       setLoading(true);
 
       await localDB.syncAssignmentsFromCloud();
+      await localDB.syncCandidatesFromCloud();
 
       const assignedIds = localDB.getAssignedAwardIds(user.id, user.email, activeYear.id);
       const assigned = assignedIds.includes(awardId);
@@ -119,7 +125,7 @@ export default function CandidateList() {
         return;
       }
 
-      const myCands = localDB.getCandidates(awardId, activeYear.id, user.id);
+      const myCands = localDB.getCandidates(awardId, activeYear.id, user.id || profile?.id);
       const joined = myCands.map((c) => ({
         ...c,
         evaluation: c.evaluations?.[0],

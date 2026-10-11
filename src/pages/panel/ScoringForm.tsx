@@ -39,6 +39,7 @@ export default function ScoringForm() {
       setLoading(true);
 
       await localDB.syncAssignmentsFromCloud();
+      await localDB.syncCandidatesFromCloud();
 
       const assignedIds = localDB.getAssignedAwardIds(user.id, user.email, activeYear.id);
       if (!assignedIds.includes(awardId)) {

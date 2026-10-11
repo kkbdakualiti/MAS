@@ -9,7 +9,7 @@ import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import DataTable from '@/components/ui/DataTable';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAwards } from '@/hooks/useAwards';
-import { localDB, isSupabaseConfigured } from '@/lib/localStore';
+import { localDB, isSupabaseConfigured, matchesYear } from '@/lib/localStore';
 import { supabase } from '@/lib/supabase';
 import { ROLE_LABELS } from '@/lib/constants';
 import type { Profile, UserRole, Award, Evaluator, EvaluatorAssignment } from '@/lib/types';
@@ -95,7 +95,10 @@ export default function UserManagement() {
     let loadedAssignments: EvaluatorAssignment[] = [];
 
     // 1. Segerakkan tugasan anugerah dari Supabase Cloud (system_settings)
-    await localDB.syncAssignmentsFromCloud();
+    await Promise.all([
+      localDB.syncAssignmentsFromCloud().catch(() => {}),
+      localDB.syncCandidatesFromCloud().catch(() => {}),
+    ]);
 
     // 2. Baca terus dari Supabase jika configured
     if (isSupabaseConfigured()) {
@@ -506,7 +509,7 @@ export default function UserManagement() {
             (a) =>
               !(
                 Array.from(targetIds).some((tid) => tid.toLowerCase() === (a.evaluator_id || '').toLowerCase()) &&
-                a.award_year_id === activeYearId
+                matchesYear(a.award_year_id, activeYearId)
               )
           );
 
@@ -532,6 +535,7 @@ export default function UserManagement() {
             formRoles.includes('panel') ? formCategoryIds : [],
             formDivision.trim() || null
           );
+          await localDB.saveCandidatesToCloud();
 
           // 6. Kemaskini cache Profile & Roles localDB
           const updatedProfile: Profile = {
@@ -651,6 +655,7 @@ export default function UserManagement() {
           localDB.setEvaluatorCategories(newEval.id, formCategoryIds, 'year-2026');
           const newTargetIds = [newUserId, cleanUsername, cleanEmail, newEval.id].filter(Boolean) as string[];
           await localDB.saveAssignmentsToCloud(newTargetIds, formCategoryIds);
+          await localDB.saveCandidatesToCloud();
           if (formDivision.trim()) {
             formCategoryIds.forEach((catId) => {
               localDB.setAssignmentDivision(catId, 'year-2026', newEval.id, formDivision.trim());

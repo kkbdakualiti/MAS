@@ -277,15 +277,24 @@ export default function TestDataManagement() {
     setIsDeleting(true);
 
     try {
-      if (!isSupabaseConfigured()) {
-        localDB.deleteDummyCandidates(
-          selectedCandidateIds,
-          user.id,
-          'admin',
-          profile?.full_name || 'Urusetia'
-        );
-      } else {
-        await supabase.from('panel_candidates').delete().in('id', selectedCandidateIds);
+      localDB.deleteDummyCandidates(
+        selectedCandidateIds,
+        user.id,
+        'admin',
+        profile?.full_name || 'Urusetia'
+      );
+
+      if (isSupabaseConfigured()) {
+        try {
+          const uuidIds = selectedCandidateIds.filter((id) =>
+            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+          );
+          if (uuidIds.length > 0) {
+            await supabase.from('panel_candidates').delete().in('id', uuidIds);
+          }
+        } catch (e) {
+          console.warn('Supabase delete candidates notice:', e);
+        }
       }
 
       toast.success(`${selectedCandidateIds.length} calon ujian berjaya dipadam.`);
@@ -305,15 +314,24 @@ export default function TestDataManagement() {
     setIsDeleting(true);
 
     try {
-      if (!isSupabaseConfigured()) {
-        localDB.deleteDummyScores(
-          selectedEvalIds,
-          user.id,
-          'admin',
-          profile?.full_name || 'Urusetia'
-        );
-      } else {
-        await supabase.from('evaluations').delete().in('id', selectedEvalIds);
+      localDB.deleteDummyScores(
+        selectedEvalIds,
+        user.id,
+        'admin',
+        profile?.full_name || 'Urusetia'
+      );
+
+      if (isSupabaseConfigured()) {
+        try {
+          const uuidIds = selectedEvalIds.filter((id) =>
+            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+          );
+          if (uuidIds.length > 0) {
+            await supabase.from('evaluations').delete().in('id', uuidIds);
+          }
+        } catch (e) {
+          console.warn('Supabase delete scores notice:', e);
+        }
       }
 
       toast.success(`${selectedEvalIds.length} rekod markah ujian berjaya dipadam.`);
